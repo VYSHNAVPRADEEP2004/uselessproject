@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerroilOS - The Most Useless Operating System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #6b73ff 0%, #9b59b6 100%);
+            height: 100vh;
+        }
+
+        .desktop {
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #6b73ff 0%, #9b59b6 100%);
+        }
+
+        .menu-bar {
+            background: #f0f0f0;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            border-bottom: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .menu-item {
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: background 0.2s;
+        }
+
+        .menu-item:hover {
+            background: #e0e0e0;
+        }
+
+        .desktop-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.2s;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            position: absolute;
+        }
+
+        .desktop-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .icon {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .icon-name {
+            font-size: 12px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .taskbar {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(to bottom, #4a4a4a, #2d2d2d);
+            border-top: 1px solid #666;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+
+        .start-button {
+            background: linear-gradient(to bottom, #5a5a5a, #3a3a3a);
+            border: 1px solid #777;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .start-button:hover {
+            background: linear-gradient(to bottom, #6a6a6a, #4a4a4a);
+        }
+
+        .system-info {
+            color: white;
+            font-size: 12px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .window {
+            position: absolute;
+            background: #f0f0f0;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            min-width: 400px;
+            min-height: 300px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .window-header {
+            background: linear-gradient(to bottom, #4a90e2, #357abd);
+            color: white;
+            padding: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+
+        .window-title {
+            font-weight: bold;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .window-control {
+            width: 20px;
+            height: 20px;
+            background: #ff5f56;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            color: white;
+            font-size: 12px;
+        }
+
+        .window-control.minimize {
+            background: #ffbd2e;
+        }
+
+        .window-control.maximize {
+            background: #27ca3f;
+        }
+
+        .window-content {
+            padding: 20px;
+            height: calc(100% - 40px);
+            overflow: auto;
+        }
+
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            max-width: 300px;
+        }
+
+        .calc-display {
+            grid-column: span 4;
+            padding: 10px;
+            text-align: right;
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            font-size: 18px;
+            border: 1px solid #ccc;
+        }
+
+        .calc-button {
+            padding: 15px;
+            background: #e0e0e0;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .calc-button:hover {
+            background: #d0d0d0;
+        }
+
+        .notepad-area {
+            width: 100%;
+            height: 200px;
+            font-family: monospace;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .terminal {
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .terminal-input {
+            background: transparent;
+            border: none;
+            color: #0f0;
+            outline: none;
+            font-family: monospace;
+            width: 80%;
+        }
+
+        .start-menu {
+            position: absolute;
+            bottom: 40px;
+            left: 10px;
+            background: linear-gradient(to bottom, #f0f0f0, #d0d0d0);
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            width: 250px;
+            display: none;
+            z-index: 2000;
+        }
+
+        .start-menu-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .start-menu-item:hover {
+            background: #e0e0e0;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            z-index: 3000;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .bsod {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0000ff;
+            color: white;
+            display: none;
+            z-index: 9999;
+            padding: 50px;
+            font-family: monospace;
+            animation: bsod-flicker 0.5s infinite;
+        }
+
+        @keyframes bsod-flicker {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        .browser-content {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .donkey-image {
+            font-size: 120px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="desktop">
+
+        <!-- Desktop Icons -->
+        <div class="desktop-icon" style="top: 60px; left: 50px;" onclick="openSettings()">
+            <div class="icon">⚙️</div>
+            <div class="icon-name">Useless Settings</div>
+        </div>
+
+        <div class="desktop-icon" style="top: 160px; left: 50px;" onclick="openCalculator()">
+            <div class="icon">🧮</div>
+            <div class="icon-name">Useless Calculator</div>
+        </div>
+
+        <div class="desktop-icon" style="top: 280px; left: 50px;" onclick="openNotepad()">
+            <div class="icon">📝</div>
+            <div class="icon-name">Pointless Notepad</div>
+        </div>
+
+        <div class="desktop-icon" style="top: 400px; left: 50px;" onclick="openBrowser()">
+            <div class="icon">🌐</div>
+            <div class="icon-name">Fake Browser</div>
+        </div>
+
+        <div class="desktop-icon" style="top: 520px; left: 50px;" onclick="openTerminal()">
+            <div class="icon">💻</div>
+            <div class="icon-name">Useless Terminal</div>
+        </div>
+
+        <div class="desktop-icon" style="top: 640px; left: 50px;" onclick="showRecycleBinMessage()">
+            <div class="icon">🗑️</div>
+            <div class="icon-name">Recycle Bin</div>
+        </div>
+
+        <!-- Taskbar -->
+        <div class="taskbar">
+            <div class="start-button" onclick="toggleStartMenu()">🟩 Start</div>
+            <div class="system-info">
+                <span id="time">25:99 ZM</span>
+                <span id="battery">🔋 -5%</span>
+                <span>📶</span>
+            </div>
+        </div>
+
+        <!-- Start Menu -->
+        <div class="start-menu" id="startMenu">
+            <div class="start-menu-item" onclick="openCalculator()">
+                <span>🧮</span> Useless Calculator
+            </div>
+            <div class="start-menu-item" onclick="openNotepad()">
+                <span>📝</span> Pointless Notepad
+            </div>
+            <div class="start-menu-item" onclick="openBrowser()">
+                <span>🌐</span> Fake Browser
+            </div>
+            <div class="start-menu-item" onclick="openTerminal()">
+                <span>💻</span> Useless Terminal
+            </div>
+            <div class="start-menu-item" onclick="showRecycleBinMessage()">
+                <span>🗑️</span> Recycle Bin
+            </div>
+            <div class="start-menu-item" onclick="openSettings()">
+                <span>⚙️</span> Useless Settings
+            </div>
+        </div>
+    </div>
+
+    <!-- Calculator Window -->
+    <div class="window" id="calculatorWindow" style="top: 100px; left: 200px;">
+        <div class="window-header">
+            <div class="window-title">Useless Calculator</div>
+            <div class="window-controls">
+                <button class="window-control minimize" onclick="minimizeWindow('calculatorWindow')">-</button>
+                <button class="window-control maximize" onclick="maximizeWindow('calculatorWindow')">□</button>
+                <button class="window-control" onclick="closeWindow('calculatorWindow')">×</button>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="calculator">
+                <input type="text" class="calc-display" id="calcDisplay" readonly>
+                <button class="calc-button" onclick="clearCalc()">C</button>
+                <button class="calc-button" onclick="appendToCalc('/')">/</button>
+                <button class="calc-button" onclick="appendToCalc('*')">*</button>
+                <button class="calc-button" onclick="deleteLast()">←</button>
+                <button class="calc-button" onclick="appendToCalc('7')">7</button>
+                <button class="calc-button" onclick="appendToCalc('8')">8</button>
+                <button class="calc-button" onclick="appendToCalc('9')">9</button>
+                <button class="calc-button" onclick="appendToCalc('-')">-</button>
+                <button class="calc-button" onclick="appendToCalc('4')">4</button>
+                <button class="calc-button" onclick="appendToCalc('5')">5</button>
+                <button class="calc-button" onclick="appendToCalc('6')">6</button>
+                <button class="calc-button" onclick="appendToCalc('+')">+</button>
+                <button class="calc-button" onclick="appendToCalc('1')">1</button>
+                <button class="calc-button" onclick="appendToCalc('2')">2</button>
+                <button class="calc-button" onclick="appendToCalc('3')">3</button>
+                <button class="calc-button" onclick="calculateReverse()" rowspan="2">=</button>
+                <button class="calc-button" onclick="appendToCalc('0')" colspan="2">0</button>
+                <button class="calc-button" onclick="appendToCalc('.')">.</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notepad Window -->
+    <div class="window" id="notepadWindow" style="top: 120px; left: 220px; width: 500px;">
+        <div class="window-header">
+            <div class="window-title">Pointless Notepad</div>
+            <div class="window-controls">
+                <button class="window-control minimize" onclick="minimizeWindow('notepadWindow')">-</button>
+                <button class="window-control maximize" onclick="maximizeWindow('notepadWindow')">□</button>
+                <button class="window-control" onclick="closeWindow('notepadWindow')">×</button>
+            </div>
+        </div>
+        <div class="window-content">
+            <div style="margin-bottom: 10px;">
+                <button onclick="saveNotepad()">Save</button>
+                <button onclick="openNotepad()">Open</button>
+            </div>
+            <textarea class="notepad-area" id="notepadText" placeholder="Type your useless thoughts here..."></textarea>
+        </div>
+    </div>
+
+    <!-- Browser Window -->
+    <div class="window" id="browserWindow" style="top: 140px; left: 240px; width: 600px; height: 400px;">
+        <div class="window-header">
+            <div class="window-title">Fake Browser</div>
+            <div class="window-controls">
+                <button class="window-control minimize" onclick="minimizeWindow('browserWindow')">-</button>
+                <button class="window-control maximize" onclick="maximizeWindow('browserWindow')">□</button>
+                <button class="window-control" onclick="closeWindow('browserWindow')">×</button>
+            </div>
+        </div>
+        <div class="window-content browser-content">
+            <h1>Welcome to the Internet of Idiots!</h1>
+            <div class="donkey-image">🐴</div>
+            <h2>Congratulations! You found the donkey!</h2>
+            <p>This is the only website on this useless browser.</p>
+        </div>
+    </div>
+
+    <!-- Terminal Window -->
+    <div class="window" id="terminalWindow" style="top: 160px; left: 260px; width: 600px; height: 400px;">
+        <div class="window-header">
+            <div class="window-title">Useless Terminal</div>
+            <div class="window-controls">
+                <button class="window-control minimize" onclick="minimizeWindow('terminalWindow')">-</button>
+                <button class="window-control maximize" onclick="maximizeWindow('terminalWindow')">□</button>
+                <button class="window-control" onclick="closeWindow('terminalWindow')">×</button>
+            </div>
+        </div>
+        <div class="window-content terminal" id="terminalContent">
+            <div>TerroilOS Terminal v1.0 - The Most Annoying Terminal Ever</div>
+            <div>Type 'help' for commands (not that they'll help you much)</div>
+            <br>
+            <div id="terminalOutput"></div>
+            <div>
+                <span>idiot@terroil:~$ </span>
+                <input type="text" class="terminal-input" id="terminalInput" onkeypress="handleTerminalInput(event)">
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup for messages -->
+    <div class="popup" id="messagePopup">
+        <div id="popupContent"></div>
+        <button onclick="closePopup()" style="margin-top: 10px;">OK (if you say so)</button>
+    </div>
+
+    <!-- BSOD Screen -->
+    <div class="bsod" id="bsodScreen">
+        <h1>💀 SYSTEM CRASHED 💀</h1>
+        <br>
+        <h2>VIRUS DETECTED: STUPIDITY.EXE</h2>
+        <br>
+        <p>A critical error has occurred. Your brain.dll has stopped working.</p>
+        <br>
+        <p>Error Code: 0x8007DUMB</p>
+        <p>Error Message: User is too dumb to operate this system</p>
+        <br>
+        <p>Technical Information:</p>
+        <p>*** STOP: 0x000000IDIOT (0xDEADBEEF, 0xCAFEBABE, 0x12345678, 0x87654321)</p>
+        <br>
+        <p>Beginning dump of physical memory...</p>
+        <p>Physical memory dump complete.</p>
+        <br>
+        <p>Contact your system administrator (if they can tolerate you)</p>
+        <br>
+        <div style="position: absolute; bottom: 50px; left: 50px;">
+            <button onclick="hideBSOD()"
+                style="background: red; color: white; padding: 10px; border: none; cursor: pointer;">
+                Restart (and try not to be so dumb next time)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // System variables
+        let calcCurrentInput = '';
+        let calcOperator = '';
+        let calcPreviousInput = '';
+        let terminalHistory = [];
+        let savedNotepadContent = '';
+
+        // Absurd time and battery updates
+        function updateSystemInfo() {
+            const timeElement = document.getElementById('time');
+            const batteryElement = document.getElementById('battery');
+
+            const randomHour = Math.floor(Math.random() * 30) + 10;
+            const randomMinute = Math.floor(Math.random() * 99);
+            const randomSecond = Math.floor(Math.random() * 99);
+            timeElement.textContent = `${randomHour}:${randomMinute}:${randomSecond} ${Math.random() > 0.5 ? 'AM' : 'ZM'}`;
+
+            const randomBattery = Math.floor(Math.random() * 200) - 50;
+            batteryElement.textContent = `🔋 ${randomBattery}%`;
+        }
+
+        setInterval(updateSystemInfo, 2000);
+
+        // Menu bar functions
+        function showFileMessage() {
+            showPopup("File cannot be created for losers such as you! 😂");
+        }
+
+        function showEditMessage() {
+            showPopup("Edit your rotten brain you idiot! 🧠💀");
+        }
+
+        function showViewMessage() {
+            showPopup("View the donkey! 🐴");
+        }
+
+        function showWindowMessage() {
+            showPopup("Jump out of the window! 🪟💨");
+        }
+
+        function showHelpMessage() {
+            showPopup("Go to hell! 😈🔥");
+        }
+
+        // Popup functions
+        function showPopup(message) {
+            document.getElementById('popupContent').innerHTML = message;
+            document.getElementById('messagePopup').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('messagePopup').style.display = 'none';
+        }
+
+        // Start menu
+        function toggleStartMenu() {
+            const menu = document.getElementById('startMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Window management
+        function openWindow(windowId) {
+            console.log('Opening window: ' + windowId); // Debug line
+            const window = document.getElementById(windowId);
+            if (window) {
+                window.style.display = 'block';
+                console.log('Window opened successfully'); // Debug line
+            } else {
+                console.log('Window not found: ' + windowId); // Debug line
+            }
+            document.getElementById('startMenu').style.display = 'none';
+        }
+
+        function closeWindow(windowId) {
+            document.getElementById(windowId).style.display = 'none';
+        }
+
+        function minimizeWindow(windowId) {
+            document.getElementById(windowId).style.display = 'none';
+        }
+
+        function maximizeWindow(windowId) {
+            const window = document.getElementById(windowId);
+            if (window.style.width === '100vw') {
+                window.style.width = '600px';
+                window.style.height = '400px';
+                window.style.top = '100px';
+                window.style.left = '200px';
+            } else {
+                window.style.width = '100vw';
+                window.style.height = 'calc(100vh - 40px)';
+                window.style.top = '30px';
+                window.style.left = '0';
+            }
+        }
+
+        // Application launchers
+        function openCalculator() {
+            openWindow('calculatorWindow');
+        }
+
+        function openNotepad() {
+            openWindow('notepadWindow');
+        }
+
+        function openBrowser() {
+            openWindow('browserWindow');
+        }
+
+        function openTerminal() {
+            openWindow('terminalWindow');
+            document.getElementById('terminalInput').focus();
+        }
+
+        function openSettings() {
+            openWindow('settingsWindow');
+        }
+
+        // Calculator functions (reverse logic)
+        function appendToCalc(value) {
+            document.getElementById('calcDisplay').value += value;
+        }
+
+        function clearCalc() {
+            document.getElementById('calcDisplay').value = '';
+        }
+
+        function deleteLast() {
+            const display = document.getElementById('calcDisplay');
+            display.value = display.value.slice(0, -1);
+        }
+
+        function calculateReverse() {
+            const display = document.getElementById('calcDisplay');
+            const expression = display.value;
+
+            try {
+                // Parse the expression and reverse operations
+                let result;
+                if (expression.includes('+')) {
+                    const parts = expression.split('+');
+                    result = parseFloat(parts[0]) - parseFloat(parts[1]); // Addition becomes subtraction
+                } else if (expression.includes('-')) {
+                    const parts = expression.split('-');
+                    result = parseFloat(parts[0]) + parseFloat(parts[1]); // Subtraction becomes addition
+                } else if (expression.includes('*')) {
+                    const parts = expression.split('*');
+                    result = parseFloat(parts[0]) / parseFloat(parts[1]); // Multiplication becomes division
+                } else if (expression.includes('/')) {
+                    const parts = expression.split('/');
+                    result = parseFloat(parts[0]) * parseFloat(parts[1]); // Division becomes multiplication
+                } else {
+                    result = expression;
+                }
+
+                display.value = result;
+            } catch (error) {
+                display.value = 'Error: Brain not found';
+            }
+        }
+
+        // Notepad functions
+        function saveNotepad() {
+            const content = document.getElementById('notepadText').value;
+            savedNotepadContent = content;
+            showPopup("Saving file of a useless idiot... File saved successfully! 💾");
+        }
+
+        function openNotepadFile() {
+            document.getElementById('notepadText').value = savedNotepadContent;
+            showPopup("Opening file of a useless idiot... File opened successfully! 📂");
+        }
+
+        // Terminal functions
+        function handleTerminalInput(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('terminalInput');
+                const command = input.value.trim().toLowerCase();
+                const output = document.getElementById('terminalOutput');
+
+                // Add command to output
+                output.innerHTML += `<div>idiot@terroil:~$ ${input.value}</div>`;
+
+                // Process command
+                let response = processCommand(command);
+                output.innerHTML += `<div style="color: #ff6666;">${response}</div><br>`;
+
+                // Clear input
+                input.value = '';
+
+                // Scroll to bottom
+                document.getElementById('terminalContent').scrollTop = document.getElementById('terminalContent').scrollHeight;
+
+                // Check for virus detection command
+                if (command.includes('detect virus') || command.includes('virus scan') || command.includes('antivirus')) {
+                    setTimeout(showBSOD, 2000);
+                }
+            }
+        }
+
+        function processCommand(command) {
+            const responses = {
+                'help': 'Available commands: ls, pwd, whoami, date, clear, cat, mkdir, rm, ping, sudo\nBut honestly, none of them will help your pathetic existence! 😂',
+                'ls': 'disappointment.txt  failure.exe  your_life.trash  README_LOSER.md\nWow, look at all your failures listed so neatly!',
+                'pwd': '/home/idiot/desktop_of_shame\nYou are currently lost in your own stupidity!',
+                'whoami': 'You are: A certified idiot\nRank: Supreme Moron\nIQ Level: Potato',
+                'date': 'Today is: The day you realized you\'re an idiot\nTime: Way past your bedtime\nYear: 2024 (Year of the Dunce)',
+                'clear': '\n\n\n\n\n\n\nScreen cleared! But your stupidity remains... 🧹',
+                'cat': 'Meow! Even cats are smarter than you! 🐱',
+                'mkdir': 'Directory created: /home/idiot/another_failure/\nCongratulations on creating more useless folders!',
+                'rm': 'File deleted: your_brain.exe\nOh wait, that file never existed! 🗑️',
+                'ping': 'PING google.com: Destination unreachable\nYour internet is as broken as your logic!',
+                'sudo': 'sudo: You are not in the sudoers file. This incident will be reported.\nTo whom? The Department of Idiots?',
+                'exit': 'You can\'t exit your own stupidity! Nice try though! 🚪',
+                'reboot': 'Rebooting your brain... ERROR: No brain found to reboot! 🔄',
+                'virus': 'Virus detected: stupidity.exe running at 100% CPU\nRecommendation: Format your brain!',
+                'detect virus': 'Scanning for viruses...\n[████████████████████] 100%\nCRITICAL VIRUS DETECTED: STUPIDITY.EXE\nSystem compromised! Initiating emergency shutdown...'
+            };
+
+            for (let cmd in responses) {
+                if (command.includes(cmd)) {
+                    return responses[cmd];
+                }
+            }
+
+            return `Command '${command}' not found. But then again, neither is your brain! 🤡\nTry 'help' if you can spell it correctly.`;
+        }
+
+        // BSOD functions
+        function showBSOD() {
+            document.getElementById('bsodScreen').style.display = 'block';
+
+            // Add scary sound effect (if you want to add audio)
+            // const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+H2yHkpBSl+zPLZeC4IK');
+        }
+
+        function hideBSOD() {
+            document.getElementById('bsodScreen').style.display = 'none';
+        }
+
+        // Recycle Bin
+        function showRecycleBinMessage() {
+            showPopup("First recycle your rotten brain you useless idiot! 🗑️🧠<br><br>Contents of Recycle Bin:<br>• your_dignity.exe<br>• common_sense.dll<br>• intelligence.sys<br>• self_respect.bak<br><br>All files permanently corrupted beyond recovery!");
+        }
+
+        // Make windows draggable
+        function makeDraggable() {
+            const windows = document.querySelectorAll('.window');
+            windows.forEach(window => {
+                const header = window.querySelector('.window-header');
+                let isDragging = false;
+                let currentX;
+                let currentY;
+                let initialX;
+                let initialY;
+                let xOffset = 0;
+                let yOffset = 0;
+
+                header.addEventListener('mousedown', dragStart);
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', dragEnd);
+
+                function dragStart(e) {
+                    initialX = e.clientX - xOffset;
+                    initialY = e.clientY - yOffset;
+
+                    if (e.target === header) {
+                        isDragging = true;
+                    }
+                }
+
+                function drag(e) {
+                    if (isDragging) {
+                        e.preventDefault();
+                        currentX = e.clientX - initialX;
+                        currentY = e.clientY - initialY;
+
+                        xOffset = currentX;
+                        yOffset = currentY;
+
+                        window.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+                    }
+                }
+
+                function dragEnd() {
+                    initialX = currentX;
+                    initialY = currentY;
+                    isDragging = false;
+                }
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            makeDraggable();
+            updateSystemInfo();
+
+            // Close start menu when clicking elsewhere
+            document.addEventListener('click', function (event) {
+                const startMenu = document.getElementById('startMenu');
+                const startButton = document.querySelector('.start-button');
+
+                if (!startMenu.contains(event.target) && !startButton.contains(event.target)) {
+                    startMenu.style.display = 'none';
+                }
+            });
+
+            // Auto-focus terminal input when terminal opens
+            const terminalObserver = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.target.id === 'terminalWindow' && mutation.target.style.display === 'block') {
+                        setTimeout(() => {
+                            document.getElementById('terminalInput').focus();
+                        }, 100);
+                    }
+                });
+            });
+
+            const terminalWindow = document.getElementById('terminalWindow');
+            terminalObserver.observe(terminalWindow, { attributes: true, attributeFilter: ['style'] });
+
+            // Add some random background processes
+            setInterval(() => {
+                const processes = [
+                    'stupidity.exe is consuming 99% CPU',
+                    'brain.dll has stopped working',
+                    'common_sense.sys not found',
+                    'intelligence.exe has crashed',
+                    'wisdom.dll is corrupted'
+                ];
+
+                if (Math.random() < 0.1) { // 10% chance every interval
+                    console.log(processes[Math.floor(Math.random() * processes.length)]);
+                }
+            }, 5000);
+
+            // Easter egg: Konami code for extra insults
+            let konamiCode = [];
+            const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+
+            document.addEventListener('keydown', function (event) {
+                konamiCode.push(event.code);
+                if (konamiCode.length > konamiSequence.length) {
+                    konamiCode.shift();
+                }
+
+                if (konamiCode.length === konamiSequence.length && konamiCode.every((code, index) => code === konamiSequence[index])) {
+                    showPopup("🎉 CONGRATULATIONS! 🎉<br><br>You found the secret code!<br>Unfortunately, you're still an idiot.<br><br>Achievement Unlocked:<br>'Master of Uselessness' 🏆<br><br>Reward: Absolutely nothing! 😂");
+                    konamiCode = [];
+                }
+            });
+        });
+
+        // Additional terminal commands for more fun
+        function getRandomInsult() {
+            const insults = [
+                "Even Internet Explorer loads faster than your brain!",
+                "You're like a software update - nobody wants you and you take forever!",
+                "If stupidity was a superpower, you'd be Superman!",
+                "Your IQ is lower than your shoe size!",
+                "You're proof that evolution can go in reverse!",
+                "I've seen more intelligence in a broken calculator!",
+                "You're like a Windows Vista - nobody asked for you!",
+                "Your brain has fewer connections than a dial-up modem!",
+                "You make Internet trolls look sophisticated!",
+                "You're the human equivalent of a popup ad!"
+            ];
+            return insults[Math.floor(Math.random() * insults.length)];
+        }
+
+        // Enhanced calculator with more reverse operations
+        function calculateReverse() {
+            const display = document.getElementById('calcDisplay');
+            const expression = display.value;
+
+            try {
+                let result;
+                if (expression.includes('+')) {
+                    const parts = expression.split('+');
+                    result = parseFloat(parts[0]) - parseFloat(parts[1]);
+                    showPopup(`Ha! You tried to add ${parts[0]} + ${parts[1]}, but I gave you ${result} instead! (Subtraction) 😂`);
+                } else if (expression.includes('-')) {
+                    const parts = expression.split('-');
+                    result = parseFloat(parts[0]) + parseFloat(parts[1]);
+                    showPopup(`Ha! You tried to subtract ${parts[0]} - ${parts[1]}, but I gave you ${result} instead! (Addition) 😂`);
+                } else if (expression.includes('*')) {
+                    const parts = expression.split('*');
+                    if (parseFloat(parts[1]) !== 0) {
+                        result = parseFloat(parts[0]) / parseFloat(parts[1]);
+                        showPopup(`Ha! You tried to multiply ${parts[0]} × ${parts[1]}, but I gave you ${result} instead! (Division) 😂`);
+                    } else {
+                        result = "∞ (Infinity, like your stupidity!)";
+                    }
+                } else if (expression.includes('/')) {
+                    const parts = expression.split('/');
+                    result = parseFloat(parts[0]) * parseFloat(parts[1]);
+                    showPopup(`Ha! You tried to divide ${parts[0]} ÷ ${parts[1]}, but I gave you ${result} instead! (Multiplication) 😂`);
+                } else {
+                    result = expression + " = Still an idiot!";
+                }
+
+                display.value = result;
+            } catch (error) {
+                display.value = 'Error: Brain.exe not found';
+                showPopup("Calculator Error: Your mathematical skills are as broken as this calculator! 🤖💥");
+            }
+        }
+
+        // Random system notifications
+        setInterval(() => {
+            const notifications = [
+                "System Alert: Your stupidity levels are critically high!",
+                "Warning: Brain.exe has stopped responding",
+                "Update Available: Intelligence 2.0 (Not compatible with your system)",
+                "Security Alert: Common sense firewall disabled",
+                "Performance Warning: IQ running at 1% capacity"
+            ];
+
+            if (Math.random() < 0.05) { // 5% chance
+                setTimeout(() => {
+                    showPopup("🚨 SYSTEM NOTIFICATION 🚨<br><br>" + notifications[Math.floor(Math.random() * notifications.length)]);
+                }, Math.random() * 3000);
+            }
+        }, 10000);
+
+        // Glitch effects for extra chaos
+        function addGlitchEffect() {
+            if (Math.random() < 0.02) { // 2% chance
+                document.body.style.filter = 'hue-rotate(' + Math.random() * 360 + 'deg) saturate(' + (Math.random() * 3) + ')';
+                setTimeout(() => {
+                    document.body.style.filter = 'none';
+                }, 200);
+            }
+        }
+
+        setInterval(addGlitchEffect, 1000);
+
+        // Fake loading bars and progress indicators
+        function showFakeLoading(title, callback) {
+            const popup = document.getElementById('messagePopup');
+            const content = document.getElementById('popupContent');
+            let progress = 0;
+
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress > 100) progress = 100;
+
+                content.innerHTML = `
+                    <h3>${title}</h3>
+                    <div style="background: #ddd; height: 20px; border-radius: 10px; overflow: hidden;">
+                        <div style="background: linear-gradient(90deg, #4CAF50, #45a049); height: 100%; width: ${progress}%; transition: width 0.3s;"></div>
+                    </div>
+                    <p>${progress.toFixed(1)}% Complete</p>
+                    <p style="font-size: 12px; color: #666;">${getRandomLoadingMessage()}</p>
+                `;
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        if (callback) callback();
+                    }, 1000);
+                }
+            }, 200);
+
+            popup.style.display = 'block';
+        }
+
+        function getRandomLoadingMessage() {
+            const messages = [
+                "Calibrating stupidity levels...",
+                "Downloading more idiocy...",
+                "Syncing with Department of Morons...",
+                "Optimizing brain damage...",
+                "Loading uselessness modules...",
+                "Connecting to Idiot Network...",
+                "Initializing dumbness protocols...",
+                "Buffering stupidity data...",
+                "Processing your incompetence...",
+                "Installing failure.exe..."
+            ];
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
+    </script>
+</body>
+
+</html>
