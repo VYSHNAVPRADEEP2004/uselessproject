@@ -161,8 +161,8 @@
 
         .window-content {
             padding: 20px;
-            height: calc(100% - 40px);
-            overflow: auto;
+            height: calc(100% - 70px);
+            overflow: hidden;
         }
 
         .calculator {
@@ -295,6 +295,36 @@
             font-size: 120px;
             margin: 20px 0;
         }
+
+        .settings-content {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .settings-option {
+            background: linear-gradient(to bottom, #e8e8e8, #d0d0d0);
+            border: 2px solid #999;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.2s;
+            display: inline-block;
+            min-width: 120px;
+        }
+
+        .settings-option:hover {
+            background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .settings-option:active {
+            transform: translateY(0px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 
@@ -362,6 +392,67 @@
             <div class="start-menu-item" onclick="openSettings()">
                 <span>⚙️</span> Useless Settings
             </div>
+        </div>
+    </div>
+
+    <!-- Settings Window -->
+    <div class="window" id="settingsWindow" style="top: 80px; left: 180px; width: 600px; height: 500px;">
+        <div class="window-header">
+            <div class="window-title">Useless Settings</div>
+            <div class="window-controls">
+                <button class="window-control minimize" onclick="minimizeWindow('settingsWindow')">-</button>
+                <button class="window-control maximize" onclick="maximizeWindow('settingsWindow')">□</button>
+                <button class="window-control" onclick="closeWindow('settingsWindow')">×</button>
+            </div>
+        </div>
+        <div class="menu-bar">
+            <div class="menu-item" onclick="showFileMessage()">File</div>
+            <div class="menu-item" onclick="showEditMessage()">Edit</div>
+            <div class="menu-item" onclick="showViewMessage()">View</div>
+            <div class="menu-item" onclick="showWindowMessage()">Window</div>
+            <div class="menu-item" onclick="showHelpMessage()">Help</div>
+        </div>
+        <div class="window-content settings-content">
+            <h2>🔧 Welcome to Useless Settings! 🔧</h2>
+            <br>
+            <p style="margin-bottom: 20px; color: #666;">
+                Configure your stupidity levels and adjust your idiocy preferences!
+            </p>
+
+            <div class="settings-option"
+                onclick="showPopup('🎨 Theme changed to: More Useless!<br>Your interface is now 50% more annoying!')">
+                🎨 Change Theme
+            </div>
+
+            <div class="settings-option"
+                onclick="showPopup('🔊 Sound settings updated!<br>All sounds now play backwards because you\'re backwards!')">
+                🔊 Audio Settings
+            </div>
+
+            <div class="settings-option"
+                onclick="showPopup('🌐 Network settings corrupted!<br>Your Wi-Fi password is now: PASSWORD123')">
+                🌐 Network
+            </div>
+
+            <div class="settings-option"
+                onclick="showPopup('👤 User account downgraded!<br>You are now: Supreme Idiot (Administrator)')">
+                👤 User Accounts
+            </div>
+
+            <div class="settings-option"
+                onclick="showPopup('🛡️ Security disabled!<br>Your computer is now protected by thoughts and prayers!')">
+                🛡️ Security
+            </div>
+
+            <div class="settings-option"
+                onclick="showPopup('⚡ Performance optimized!<br>Your computer now runs at the speed of your brain: 0.1 Hz')">
+                ⚡ Performance
+            </div>
+
+            <br>
+            <p style="color: #999; font-style: italic; margin-top: 15px;">
+                Remember: No matter what you change here, you'll still be an idiot! 😂
+            </p>
         </div>
     </div>
 
@@ -518,23 +609,23 @@
 
         // Menu bar functions
         function showFileMessage() {
-            showPopup("File cannot be created for losers such as you! 😂");
+            showPopup("📁 File cannot be created for losers such as you! 😂<br><br>Error Details:<br>• Loser.exe detected<br>• Insufficient brain cells<br>• File system corrupted by stupidity<br><br>Try again never!");
         }
 
         function showEditMessage() {
-            showPopup("Edit your rotten brain you idiot! 🧠💀");
+            showPopup("✏️ Edit your rotten brain you idiot! 🧠💀<br><br>Edit Options Available:<br>• Delete stupidity.dll (FAILED)<br>• Upgrade intelligence.sys (NOT COMPATIBLE)<br>• Format brain.exe (ALREADY CORRUPTED)<br><br>No changes can be made to your hopeless mind!");
         }
 
         function showViewMessage() {
-            showPopup("View the donkey! 🐴");
+            showPopup("👀 View the donkey! 🐴<br><br>🐴🐴🐴🐴🐴<br>🐴 DONKEY! 🐴<br>🐴🐴🐴🐴🐴<br><br>Congratulations! You're looking at something smarter than you!");
         }
 
         function showWindowMessage() {
-            showPopup("Jump out of the window! 🪟💨");
+            showPopup("🪟 Jump out of the window! 💨<br><br>Instructions:<br>1. Locate nearest window<br>2. Open window<br>3. Jump (metaphorically, of course!)<br><br>Warning: Your stupidity might survive the fall! 😂");
         }
 
         function showHelpMessage() {
-            showPopup("Go to hell! 😈🔥");
+            showPopup("🔥 Go to hell! 😈🔥<br><br>Help Topics:<br>• How to be less stupid: IMPOSSIBLE<br>• Troubleshooting your brain: NOT FOUND<br>• Getting technical support: DENIED<br><br>No help available for hopeless cases like you!");
         }
 
         // Popup functions
