@@ -26,6 +26,85 @@
             background: linear-gradient(135deg, #6b73ff 0%, #9b59b6 100%);
         }
 
+        /* Main Big Clown at center of desktop */
+        .desktop-clown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 200px;
+            animation: clown-bounce 2s ease-in-out infinite;
+            text-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .desktop-clown:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            animation-duration: 0.5s;
+        }
+
+        /* Secondary Clowns */
+        .desktop-clown-small {
+            position: absolute;
+            font-size: 120px;
+            animation: clown-wiggle 3s ease-in-out infinite;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .desktop-clown-small:hover {
+            transform: scale(1.2) rotate(10deg);
+            animation-duration: 1s;
+        }
+
+        .desktop-clown-small.clown2 {
+            top: 25%;
+            right: 20%;
+            animation-delay: -0.5s;
+        }
+
+        .desktop-clown-small.clown3 {
+            bottom: 25%;
+            left: 15%;
+            animation-delay: -1s;
+        }
+
+        @keyframes clown-bounce {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.05) rotate(2deg);
+            }
+        }
+
+        @keyframes clown-wiggle {
+
+            0%,
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+
+            25% {
+                transform: scale(1.08) rotate(-3deg);
+            }
+
+            50% {
+                transform: scale(0.95) rotate(0deg);
+            }
+
+            75% {
+                transform: scale(1.05) rotate(3deg);
+            }
+        }
+
         .menu-bar {
             background: #f0f0f0;
             height: 30px;
@@ -59,6 +138,7 @@
             color: white;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
             position: absolute;
+            z-index: 2;
         }
 
         .desktop-icon:hover {
@@ -87,6 +167,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 10px;
+            z-index: 100;
         }
 
         .start-button {
@@ -397,6 +478,13 @@
 
 <body>
     <div class="desktop">
+        <!-- Main Big Clown at Center -->
+        <div class="desktop-clown" onclick="clownClicked('main')">🤡</div>
+
+        <!-- Secondary Clowns -->
+        <div class="desktop-clown-small clown2" onclick="clownClicked('second')">🤡</div>
+        <div class="desktop-clown-small clown3" onclick="clownClicked('third')">🤡</div>
+
         <!-- Desktop Icons -->
         <div class="desktop-icon" style="top: 60px; left: 50px;" onclick="openSettings()">
             <div class="icon">⚙️</div>
@@ -704,6 +792,111 @@
         let currentFileName = 'Untitled';
         let isFileSaved = true; // Track if current file has been saved
         let lastSavedContent = ''; // Track last saved content
+        let clownClickCount = 0;
+        let secondClownClicks = 0;
+        let thirdClownClicks = 0;
+
+        // Enhanced Clown click handler with individual tracking
+        function clownClicked(clownType) {
+            if (clownType === 'main') {
+                clownClickCount++;
+                handleMainClownClick();
+            } else if (clownType === 'second') {
+                secondClownClicks++;
+                handleSecondClownClick();
+            } else if (clownType === 'third') {
+                thirdClownClicks++;
+                handleThirdClownClick();
+            }
+
+            // Check for ultimate clown chaos (all clowns clicked multiple times)
+            if (clownClickCount >= 3 && secondClownClicks >= 3 && thirdClownClicks >= 3) {
+                setTimeout(() => {
+                    showPopup("🎪🤡 ULTIMATE CLOWN APOCALYPSE! 🤡🎪<br><br>ALL THREE CLOWNS HAVE BEEN AWAKENED!<br>THE CIRCUS HAS TAKEN OVER THE SYSTEM!<br><br>🎪 CHAOS LEVEL: MAXIMUM 🎪<br><br>There is no escape from the clown dimension now! 🌪️🤡");
+                    setTimeout(() => {
+                        // Super chaos mode
+                        document.body.style.filter = 'hue-rotate(360deg) saturate(3) contrast(2)';
+                        setTimeout(showBSOD, 2000);
+                    }, 3000);
+                }, 1000);
+            }
+        }
+
+        function handleMainClownClick() {
+            const clownMessages = [
+                "🤡 HONK HONK! 🤡<br><br>Welcome to the MAIN circus, you magnificent fool!<br>You clicked the HEAD CLOWN! That makes you... the ring leader! 🎪",
+                "🤡 MAIN CLOWN ALERT! 🤡<br><br>The HEAD CLOWN is watching you!<br>Every click makes you more... clown-like! 🎭<br><br>Main Clown clicks: " + clownClickCount,
+                "🤡 HEAD CLOWN ACTIVATED! 🤡<br><br>You've activated SUPREME CLOWN MODE!<br>The main clown's transformation is 66% complete! 🎪🎭<br><br>The circus is spreading!",
+                "🤡 RING LEADER ACKNOWLEDGED! 🤡<br><br>The HEAD CLOWN crowns you CHIEF OF CLOWNS!<br>You are now the supreme leader of the Idiot Circus! 👑🤡<br><br>Your reign of silliness begins!",
+                "🤡 ULTIMATE HEAD CLOWN! 🤡<br><br>You clicked the main clown " + clownClickCount + " times!<br>You are now the EMPEROR OF ALL CLOWNS! 👑🤡<br><br>All other clowns bow to your stupidity!"
+            ];
+
+            let messageIndex = Math.min(clownClickCount - 1, clownMessages.length - 1);
+            if (clownClickCount > 5) {
+                messageIndex = 4;
+            }
+
+            showPopup(clownMessages[messageIndex]);
+
+            if (clownClickCount >= 3) {
+                document.body.style.filter = 'hue-rotate(' + (clownClickCount * 90) + 'deg)';
+                setTimeout(() => {
+                    document.body.style.filter = 'none';
+                }, 2000);
+            }
+        }
+
+        function handleSecondClownClick() {
+            const secondClownMessages = [
+                "🎭 SECOND CLOWN ACTIVATED! 🎭<br><br>The RIGHT-HAND CLOWN has noticed you!<br>This clown specializes in advanced stupidity! 🎪",
+                "🎭 ASSISTANT CLOWN ENGAGED! 🎭<br><br>The second clown is building up power!<br>Assistant clown energy: " + (secondClownClicks * 25) + "%<br><br>Things are getting more chaotic! 🌪️",
+                "🎭 DEPUTY CLOWN UNLEASHED! 🎭<br><br>The second clown has reached FULL POWER!<br>Your idiocy levels are now CRITICALLY HIGH! ⚠️🤡<br><br>The assistant has become the master!",
+                "🎭 SECOND-IN-COMMAND! 🎭<br><br>The assistant clown declares you VICE PRESIDENT OF STUPIDITY!<br>You now hold the second-highest rank in the Clown Hierarchy! 🏆🎭",
+                "🎭 ETERNAL SECOND CLOWN! 🎭<br><br>" + secondClownClicks + " clicks on the assistant clown!<br>You are now the DEPUTY EMPEROR OF CLOWNS! 🎪👑<br><br>Your secondary silliness is unmatched!"
+            ];
+
+            let messageIndex = Math.min(secondClownClicks - 1, secondClownMessages.length - 1);
+            if (secondClownClicks > 5) {
+                messageIndex = 4;
+            }
+
+            showPopup(secondClownMessages[messageIndex]);
+
+            if (secondClownClicks >= 2) {
+                const clown = document.querySelector('.clown2');
+                clown.style.filter = 'hue-rotate(' + (secondClownClicks * 120) + 'deg) saturate(2)';
+                setTimeout(() => {
+                    clown.style.filter = 'none';
+                }, 3000);
+            }
+        }
+
+        function handleThirdClownClick() {
+            const thirdClownMessages = [
+                "🎪 THIRD CLOWN AWAKENED! 🎪<br><br>The WILDCARD CLOWN has joined the chaos!<br>This clown is completely unpredictable! 🌪️🤡",
+                "🎪 CHAOS CLOWN ACTIVATED! 🎪<br><br>The third clown thrives on pure chaos!<br>Chaos meter: " + (thirdClownClicks * 33) + "%<br><br>Reality is becoming unstable! 🌀",
+                "🎪 ANARCHY CLOWN RELEASED! 🎪<br><br>The third clown has reached MAXIMUM CHAOS!<br>All rules of logic have been suspended! 🚫🧠<br><br>Welcome to the realm of pure nonsense!",
+                "🎪 MINISTER OF MAYHEM! 🎪<br><br>The chaos clown appoints you SECRETARY OF STUPIDITY!<br>You now control the Department of Absolute Nonsense! 🏢🤡",
+                "🎪 ETERNAL CHAOS CLOWN! 🎪<br><br>" + thirdClownClicks + " clicks of pure chaos!<br>You are now the MINISTER OF MAXIMUM MAYHEM! 🎪⚡<br><br>Your chaotic energy knows no bounds!"
+            ];
+
+            let messageIndex = Math.min(thirdClownClicks - 1, thirdClownMessages.length - 1);
+            if (thirdClownClicks > 5) {
+                messageIndex = 4;
+            }
+
+            showPopup(thirdClownMessages[messageIndex]);
+
+            if (thirdClownClicks >= 2) {
+                const clown = document.querySelector('.clown3');
+                clown.style.transform += ` rotate(${thirdClownClicks * 45}deg)`;
+                clown.style.filter = 'brightness(1.5) contrast(2) saturate(3)';
+                setTimeout(() => {
+                    clown.style.filter = 'none';
+                    clown.style.transform = clown.style.transform.replace(` rotate(${thirdClownClicks * 45}deg)`, '');
+                }, 2000);
+            }
+        }
 
         // Absurd time and battery updates
         function updateSystemInfo() {
