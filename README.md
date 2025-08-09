@@ -1,164 +1,100 @@
-# UselessOS 🗑️
+# [project Name :TurmoilOS] 🎯
 
-**The Most Completely Useless Operating System Simulator Ever Created**
 
-UselessOS is an Electron-based application that simulates a desktop operating system with one key feature: it's completely useless! Every application, feature, and function has been carefully designed to waste your time in the most entertaining way possible.
+## Basic Details
+### Team Name: 404
 
-## Features 🎭
 
-### Applications That Do Nothing Useful:
-- **🧮 Useless Calculator** - Sometimes returns π for no reason
-- **📝 Pointless Notepad** - A text editor for writing meaningless text
-- **🌐 Fake Browser** - Browses absolutely nothing but counts time wasted
-- **💻 Useless Terminal** - Commands that serve no purpose
-- **⚙️ Useless Settings** - Settings that can't be changed
+### Team Members
+- Team Lead: [SooryaAP] - [Cochin University College of Engineering Kuttanad]
+- Member 2: [VyshnavPradeep] - [Cochin University College of Engineering Kuttanad]
 
-### System Features:
-- **Desktop Environment** - Complete with icons, taskbar, and start menu
-- **Window Management** - Drag, minimize, maximize, and close windows
-- **Blue Screen of Death** - Randomly appears for maximum authenticity
-- **Loading Screens** - For loading absolutely nothing
-- **Useless Notifications** - Reminds you of how useless everything is
 
-## Installation & Setup 🚀
+### Project Description
 
-### Prerequisites:
-- Node.js (v16 or higher)
-- npm (comes with Node.js)
+The Project is named as a Turmoil OS an operating system which pranks the users
+by annoying functionalities and features.
+This project is a cross-platform desktop application built using Electron.js.  
+It uses standard web technologies (HTML, CSS, JavaScript) for the user interface while leveraging Node.js for backend logic.  
+The app structure follows Electron’s separation of processes:
+- Main Process (application lifecycle control)
+- Renderer Process (UI rendering and user interaction)
+- Preload Script (secure communication bridge)
+Build scripts for Windows and Linux/macOS automate packaging into installable files.
 
-### Quick Start:
-1. Clone or download this repository
-2. Open terminal in the project directory
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-4. Run in development mode:
-   ```bash
-   npm start
-   ```
+### The Problem (that doesn't exist)
+There are no OS for pranking the users in a funny way and to serve as a refreshment to escape the boredom
 
-### Building for Distribution:
-```bash
-# Install dependencies first
+### The Solution (that nobody asked for)
+The project will serve it's purpose as it l]kills the boredom of the user and annoys him in afunny way
+
+## Technical Details
+### Technologies/Components Used
+📦 Technology Stack:
+- Framework: Electron.js
+- Frontend: HTML (UI layout), CSS (styling), JavaScript (interaction logic)
+- Backend: Node.js APIs in Electron main process
+- Scripts: 
+  - build.bat (Windows build automation)
+  - build.sh (Linux/macOS build automation)
+- Package Management: npm (package.json, package-lock.json)
+
+🧩 Core Components:
+1. main.js:
+   - Initializes the app
+   - Creates main window
+   - Handles lifecycle events (open, close, quit)
+2. preload.js:
+   - Secure API bridge between frontend and backend
+   - Runs before renderer loads
+3. uselessos.html:
+   - Defines UI structure
+4. uselessos.css:
+   - Styles the UI
+5. uselessos.js:
+   - Handles frontend events and UI logic
+6. build.bat / build.sh:
+   - Packages the application for release
+
+⚙ Application Flow:
+1. npm start → Electron starts main process
+2. main.js creates app window → loads uselessos.html
+3. preload.js injects APIs
+4. Renderer process runs uselessos.js for interactivity
+5. User interacts → renderer updates UI or calls backend
+6. build scripts package for OS-specific distribution
+### Implementation
+
+# Installation
 npm install
 
-# Build for all platforms
-./build.sh
+# Run
+npm start
 
-# Or build for specific platforms:
-npm run build-win    # Windows
-npm run build-mac    # macOS
-npm run build-linux  # Linux
-```
+### Project Documentation
+For Software:
 
-## Project Structure 📁
+# Screenshots (Add at least 3)
+<img width="1838" height="893" alt="image" src="https://github.com/user-attachments/assets/d3851eb0-93c8-46d4-ad0e-c4c0f0a3e735" />
+<img width="1919" height="1022" alt="image" src="https://github.com/user-attachments/assets/f61675f3-2e77-459a-a293-1e1ebd4c905d" />
+<img width="1819" height="869" alt="image" src="https://github.com/user-attachments/assets/6065f32d-279d-44e4-81c1-7265e2a9c3f2" />
+<img width="1919" height="1016" alt="image" src="https://github.com/user-attachments/assets/a0c959c0-983d-4cb4-b73d-f64fee70b342" />
+<img width="1915" height="1013" alt="image" src="https://github.com/user-attachments/assets/127683fb-f123-4a4a-b1f2-8db2d4ce6098" />
+<img width="1919" height="961" alt="image" src="https://github.com/user-attachments/assets/542b62f4-72e9-478f-8f54-a7367533c8bd" />
+<img width="1912" height="970" alt="image" src="https://github.com/user-attachments/assets/406f933c-3573-4b9a-bc49-48ed0afd7270" />
+<img width="1913" height="1015" alt="image" src="https://github.com/user-attachments/assets/ded8d6af-f72e-40b1-abc4-c3e5be5709e0" />
 
-```
-UselessOS/
-├── main.js              # Electron main process
-├── preload.js           # Security bridge between main and renderer
-├── uselessos.html       # Main UI structure
-├── uselessos.css        # All the beautiful (useless) styling
-├── uselessos.js         # Application logic and window management
-├── package.json         # Dependencies and build configuration
-├── build.sh            # Build script for all platforms
-├── assets/
-│   ├── icon.png        # Linux application icon
-│   ├── icon.ico        # Windows application icon
-│   └── icon.icns       # macOS application icon
-└── dist/               # Built executables (created after building)
-```
 
-## Key Components 🔧
 
-### Electron Main Process (`main.js`)
-- Window creation and management
-- IPC communication handlers
-- Platform-specific configurations
 
-### Preload Script (`preload.js`)
-- Secure bridge between main and renderer processes
-- Exposes safe APIs to the frontend
 
-### Frontend (`uselessos.html`, `uselessos.css`, `uselessos.js`)
-- Complete desktop environment simulation
-- Window management system
-- Multiple useless applications
-- Responsive design for different screen sizes
+# Diagrams
+<img width="842" height="810" alt="image" src="https://github.com/user-attachments/assets/6de89fd1-ffd1-464f-821a-2ef8fe3be5df" />
 
-## Development Guide 👨‍💻
 
-### Adding New Useless Applications:
-1. Add a desktop icon in `uselessos.html`
-2. Create the application window in `uselessos.js`
-3. Add styling in `uselessos.css`
-4. Implement useless functionality
 
-### Customization:
-- **Colors/Theme**: Modify the CSS gradient backgrounds and color schemes
-- **Applications**: Add new windows with even more useless features
-- **Notifications**: Add more pointless system notifications
-- **Errors**: Create new fake error scenarios
 
-## Technical Details 🛠️
-
-### Built With:
-- **Electron** - Cross-platform desktop app framework
-- **HTML5/CSS3** - Frontend structure and styling
-- **JavaScript (ES6+)** - Application logic
-- **Node.js** - Backend runtime
-
-### Browser Compatibility:
-- Runs as a desktop application (Electron)
-- Also works in modern web browsers for testing
-
-### Performance:
-- Optimized for maximum uselessness
-- Efficient at wasting time
-- Memory usage: Just enough to be annoying
-
-## Contributing 🤝
-
-Want to make UselessOS even more useless? Contributions are welcome!
-
-### Ideas for Contributions:
-- More useless applications
-- Additional pointless features
-- Better fake error messages
-- Improved time-wasting mechanisms
-- More creative ways to do nothing
-
-### Development Setup:
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/more-uselessness`
-3. Make your useless changes
-4. Test that everything still does nothing
-5. Submit a pull request
-
-## License 📜
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Disclaimer ⚠️
-
-UselessOS is intended for entertainment and educational purposes only. It is not a real operating system and should not be used for any productive work. The author is not responsible for any time wasted, productivity lost, or existential crises caused by using this software.
-
-## Acknowledgments 🙏
-
-- Inspired by all the actually useful software out there
-- Thanks to the Electron team for making cross-platform uselessness possible
-- Dedicated to everyone who has ever wanted a completely pointless desktop experience
-
----
-
-**Remember: If you're looking for useful software, you've come to the wrong place! 😄**
-
-## Support 💬
-
-If you need help with UselessOS (which would be ironic), you can:
-- Open an issue on GitHub
-- Ask questions that will receive useless answers
-- Request features that serve no purpose
-
-*"Why make something useful when you can make something completely pointless?"* - UselessOS Philosophy
+## Team Contributions
+  
+   Soorya AP [LEAD] - development and creation of bat and shell script
+   VyshnavPradeep   - contributed to the development of the structure and overall development of GUI
