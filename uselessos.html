@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TerroilOS - The Most Useless Operating System</title>
+    <title>TurmoilOS - The Most Useless Operating System</title>
     <style>
         * {
             margin: 0;
@@ -201,6 +201,21 @@
             font-family: monospace;
             padding: 10px;
             border: 1px solid #ccc;
+            user-select: text;
+        }
+
+        .notepad-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .notepad-input {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-family: inherit;
         }
 
         .terminal {
@@ -257,6 +272,7 @@
             z-index: 3000;
             display: none;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
         }
 
         .bsod {
@@ -325,12 +341,49 @@
             transform: translateY(0px);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
+
+        .file-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            z-index: 4000;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            min-width: 300px;
+        }
+
+        .file-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            padding: 5px;
+        }
+
+        .file-item {
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .file-item:hover {
+            background: #e0e0e0;
+        }
+
+        .file-item.selected {
+            background: #0078d4;
+            color: white;
+        }
     </style>
 </head>
 
 <body>
     <div class="desktop">
-
         <!-- Desktop Icons -->
         <div class="desktop-icon" style="top: 60px; left: 50px;" onclick="openSettings()">
             <div class="icon">⚙️</div>
@@ -494,7 +547,7 @@
     <!-- Notepad Window -->
     <div class="window" id="notepadWindow" style="top: 120px; left: 220px; width: 500px;">
         <div class="window-header">
-            <div class="window-title">Pointless Notepad</div>
+            <div class="window-title">Pointless Notepad - <span id="currentFileName">Untitled</span></div>
             <div class="window-controls">
                 <button class="window-control minimize" onclick="minimizeWindow('notepadWindow')">-</button>
                 <button class="window-control maximize" onclick="maximizeWindow('notepadWindow')">□</button>
@@ -502,9 +555,11 @@
             </div>
         </div>
         <div class="window-content">
-            <div style="margin-bottom: 10px;">
-                <button onclick="saveNotepad()">Save</button>
-                <button onclick="openNotepad()">Open</button>
+            <div class="notepad-controls">
+                <button onclick="newNotepadFile()">New</button>
+                <button onclick="showSaveDialog()">Save</button>
+                <button onclick="showOpenDialog()">Open</button>
+                <span style="margin-left: 20px;">Current File: <span id="statusFileName">Untitled</span></span>
             </div>
             <textarea class="notepad-area" id="notepadText" placeholder="Type your useless thoughts here..."></textarea>
         </div>
@@ -539,14 +594,44 @@
             </div>
         </div>
         <div class="window-content terminal" id="terminalContent">
-            <div>TerroilOS Terminal v1.0 - The Most Annoying Terminal Ever</div>
+            <div>TurmoilOS Terminal v1.0 - The Most Annoying Terminal Ever</div>
             <div>Type 'help' for commands (not that they'll help you much)</div>
             <br>
             <div id="terminalOutput"></div>
             <div>
-                <span>idiot@terroil:~$ </span>
+                <span>idiot@turmoil:~$ </span>
                 <input type="text" class="terminal-input" id="terminalInput" onkeypress="handleTerminalInput(event)">
             </div>
+        </div>
+    </div>
+
+    <!-- Save File Dialog -->
+    <div class="file-dialog" id="saveDialog">
+        <h3>💾 Save File (For A Supreme Idiot)</h3>
+        <div>
+            <label>Filename:</label>
+            <input type="text" id="saveFileName" class="notepad-input" placeholder="Enter filename..."
+                style="width: 200px;">
+        </div>
+        <div style="margin-top: 15px;">
+            <button onclick="saveFile()">Save</button>
+            <button onclick="closeSaveDialog()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Open File Dialog -->
+    <div class="file-dialog" id="openDialog">
+        <h3>📂 Open File (For A Moron)</h3>
+        <div class="file-list" id="fileList">
+            <!-- Files will be populated here -->
+        </div>
+        <div>
+            <label>Selected File:</label>
+            <input type="text" id="selectedFileName" class="notepad-input" readonly style="width: 200px;">
+        </div>
+        <div style="margin-top: 15px;">
+            <button onclick="openSelectedFile()">Open</button>
+            <button onclick="closeOpenDialog()">Cancel</button>
         </div>
     </div>
 
@@ -589,7 +674,8 @@
         let calcOperator = '';
         let calcPreviousInput = '';
         let terminalHistory = [];
-        let savedNotepadContent = '';
+        let savedFiles = {}; // Store files in memory
+        let currentFileName = 'Untitled';
 
         // Absurd time and battery updates
         function updateSystemInfo() {
@@ -646,13 +732,9 @@
 
         // Window management
         function openWindow(windowId) {
-            console.log('Opening window: ' + windowId); // Debug line
             const window = document.getElementById(windowId);
             if (window) {
                 window.style.display = 'block';
-                console.log('Window opened successfully'); // Debug line
-            } else {
-                console.log('Window not found: ' + windowId); // Debug line
             }
             document.getElementById('startMenu').style.display = 'none';
         }
@@ -721,245 +803,6 @@
             const expression = display.value;
 
             try {
-                // Parse the expression and reverse operations
-                let result;
-                if (expression.includes('+')) {
-                    const parts = expression.split('+');
-                    result = parseFloat(parts[0]) - parseFloat(parts[1]); // Addition becomes subtraction
-                } else if (expression.includes('-')) {
-                    const parts = expression.split('-');
-                    result = parseFloat(parts[0]) + parseFloat(parts[1]); // Subtraction becomes addition
-                } else if (expression.includes('*')) {
-                    const parts = expression.split('*');
-                    result = parseFloat(parts[0]) / parseFloat(parts[1]); // Multiplication becomes division
-                } else if (expression.includes('/')) {
-                    const parts = expression.split('/');
-                    result = parseFloat(parts[0]) * parseFloat(parts[1]); // Division becomes multiplication
-                } else {
-                    result = expression;
-                }
-
-                display.value = result;
-            } catch (error) {
-                display.value = 'Error: Brain not found';
-            }
-        }
-
-        // Notepad functions
-        function saveNotepad() {
-            const content = document.getElementById('notepadText').value;
-            savedNotepadContent = content;
-            showPopup("Saving file of a useless idiot... File saved successfully! 💾");
-        }
-
-        function openNotepadFile() {
-            document.getElementById('notepadText').value = savedNotepadContent;
-            showPopup("Opening file of a useless idiot... File opened successfully! 📂");
-        }
-
-        // Terminal functions
-        function handleTerminalInput(event) {
-            if (event.key === 'Enter') {
-                const input = document.getElementById('terminalInput');
-                const command = input.value.trim().toLowerCase();
-                const output = document.getElementById('terminalOutput');
-
-                // Add command to output
-                output.innerHTML += `<div>idiot@terroil:~$ ${input.value}</div>`;
-
-                // Process command
-                let response = processCommand(command);
-                output.innerHTML += `<div style="color: #ff6666;">${response}</div><br>`;
-
-                // Clear input
-                input.value = '';
-
-                // Scroll to bottom
-                document.getElementById('terminalContent').scrollTop = document.getElementById('terminalContent').scrollHeight;
-
-                // Check for virus detection command
-                if (command.includes('detect virus') || command.includes('virus scan') || command.includes('antivirus')) {
-                    setTimeout(showBSOD, 2000);
-                }
-            }
-        }
-
-        function processCommand(command) {
-            const responses = {
-                'help': 'Available commands: ls, pwd, whoami, date, clear, cat, mkdir, rm, ping, sudo\nBut honestly, none of them will help your pathetic existence! 😂',
-                'ls': 'disappointment.txt  failure.exe  your_life.trash  README_LOSER.md\nWow, look at all your failures listed so neatly!',
-                'pwd': '/home/idiot/desktop_of_shame\nYou are currently lost in your own stupidity!',
-                'whoami': 'You are: A certified idiot\nRank: Supreme Moron\nIQ Level: Potato',
-                'date': 'Today is: The day you realized you\'re an idiot\nTime: Way past your bedtime\nYear: 2024 (Year of the Dunce)',
-                'clear': '\n\n\n\n\n\n\nScreen cleared! But your stupidity remains... 🧹',
-                'cat': 'Meow! Even cats are smarter than you! 🐱',
-                'mkdir': 'Directory created: /home/idiot/another_failure/\nCongratulations on creating more useless folders!',
-                'rm': 'File deleted: your_brain.exe\nOh wait, that file never existed! 🗑️',
-                'ping': 'PING google.com: Destination unreachable\nYour internet is as broken as your logic!',
-                'sudo': 'sudo: You are not in the sudoers file. This incident will be reported.\nTo whom? The Department of Idiots?',
-                'exit': 'You can\'t exit your own stupidity! Nice try though! 🚪',
-                'reboot': 'Rebooting your brain... ERROR: No brain found to reboot! 🔄',
-                'virus': 'Virus detected: stupidity.exe running at 100% CPU\nRecommendation: Format your brain!',
-                'detect virus': 'Scanning for viruses...\n[████████████████████] 100%\nCRITICAL VIRUS DETECTED: STUPIDITY.EXE\nSystem compromised! Initiating emergency shutdown...'
-            };
-
-            for (let cmd in responses) {
-                if (command.includes(cmd)) {
-                    return responses[cmd];
-                }
-            }
-
-            return `Command '${command}' not found. But then again, neither is your brain! 🤡\nTry 'help' if you can spell it correctly.`;
-        }
-
-        // BSOD functions
-        function showBSOD() {
-            document.getElementById('bsodScreen').style.display = 'block';
-
-            // Add scary sound effect (if you want to add audio)
-            // const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+H2yHkpBSl+zPLZeC4IK');
-        }
-
-        function hideBSOD() {
-            document.getElementById('bsodScreen').style.display = 'none';
-        }
-
-        // Recycle Bin
-        function showRecycleBinMessage() {
-            showPopup("First recycle your rotten brain you useless idiot! 🗑️🧠<br><br>Contents of Recycle Bin:<br>• your_dignity.exe<br>• common_sense.dll<br>• intelligence.sys<br>• self_respect.bak<br><br>All files permanently corrupted beyond recovery!");
-        }
-
-        // Make windows draggable
-        function makeDraggable() {
-            const windows = document.querySelectorAll('.window');
-            windows.forEach(window => {
-                const header = window.querySelector('.window-header');
-                let isDragging = false;
-                let currentX;
-                let currentY;
-                let initialX;
-                let initialY;
-                let xOffset = 0;
-                let yOffset = 0;
-
-                header.addEventListener('mousedown', dragStart);
-                document.addEventListener('mousemove', drag);
-                document.addEventListener('mouseup', dragEnd);
-
-                function dragStart(e) {
-                    initialX = e.clientX - xOffset;
-                    initialY = e.clientY - yOffset;
-
-                    if (e.target === header) {
-                        isDragging = true;
-                    }
-                }
-
-                function drag(e) {
-                    if (isDragging) {
-                        e.preventDefault();
-                        currentX = e.clientX - initialX;
-                        currentY = e.clientY - initialY;
-
-                        xOffset = currentX;
-                        yOffset = currentY;
-
-                        window.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-                    }
-                }
-
-                function dragEnd() {
-                    initialX = currentX;
-                    initialY = currentY;
-                    isDragging = false;
-                }
-            });
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function () {
-            makeDraggable();
-            updateSystemInfo();
-
-            // Close start menu when clicking elsewhere
-            document.addEventListener('click', function (event) {
-                const startMenu = document.getElementById('startMenu');
-                const startButton = document.querySelector('.start-button');
-
-                if (!startMenu.contains(event.target) && !startButton.contains(event.target)) {
-                    startMenu.style.display = 'none';
-                }
-            });
-
-            // Auto-focus terminal input when terminal opens
-            const terminalObserver = new MutationObserver(function (mutations) {
-                mutations.forEach(function (mutation) {
-                    if (mutation.target.id === 'terminalWindow' && mutation.target.style.display === 'block') {
-                        setTimeout(() => {
-                            document.getElementById('terminalInput').focus();
-                        }, 100);
-                    }
-                });
-            });
-
-            const terminalWindow = document.getElementById('terminalWindow');
-            terminalObserver.observe(terminalWindow, { attributes: true, attributeFilter: ['style'] });
-
-            // Add some random background processes
-            setInterval(() => {
-                const processes = [
-                    'stupidity.exe is consuming 99% CPU',
-                    'brain.dll has stopped working',
-                    'common_sense.sys not found',
-                    'intelligence.exe has crashed',
-                    'wisdom.dll is corrupted'
-                ];
-
-                if (Math.random() < 0.1) { // 10% chance every interval
-                    console.log(processes[Math.floor(Math.random() * processes.length)]);
-                }
-            }, 5000);
-
-            // Easter egg: Konami code for extra insults
-            let konamiCode = [];
-            const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
-
-            document.addEventListener('keydown', function (event) {
-                konamiCode.push(event.code);
-                if (konamiCode.length > konamiSequence.length) {
-                    konamiCode.shift();
-                }
-
-                if (konamiCode.length === konamiSequence.length && konamiCode.every((code, index) => code === konamiSequence[index])) {
-                    showPopup("🎉 CONGRATULATIONS! 🎉<br><br>You found the secret code!<br>Unfortunately, you're still an idiot.<br><br>Achievement Unlocked:<br>'Master of Uselessness' 🏆<br><br>Reward: Absolutely nothing! 😂");
-                    konamiCode = [];
-                }
-            });
-        });
-
-        // Additional terminal commands for more fun
-        function getRandomInsult() {
-            const insults = [
-                "Even Internet Explorer loads faster than your brain!",
-                "You're like a software update - nobody wants you and you take forever!",
-                "If stupidity was a superpower, you'd be Superman!",
-                "Your IQ is lower than your shoe size!",
-                "You're proof that evolution can go in reverse!",
-                "I've seen more intelligence in a broken calculator!",
-                "You're like a Windows Vista - nobody asked for you!",
-                "Your brain has fewer connections than a dial-up modem!",
-                "You make Internet trolls look sophisticated!",
-                "You're the human equivalent of a popup ad!"
-            ];
-            return insults[Math.floor(Math.random() * insults.length)];
-        }
-
-        // Enhanced calculator with more reverse operations
-        function calculateReverse() {
-            const display = document.getElementById('calcDisplay');
-            const expression = display.value;
-
-            try {
                 let result;
                 if (expression.includes('+')) {
                     const parts = expression.split('+');
@@ -992,34 +835,206 @@
             }
         }
 
-        // Random system notifications
-        setInterval(() => {
-            const notifications = [
-                "System Alert: Your stupidity levels are critically high!",
-                "Warning: Brain.exe has stopped responding",
-                "Update Available: Intelligence 2.0 (Not compatible with your system)",
-                "Security Alert: Common sense firewall disabled",
-                "Performance Warning: IQ running at 1% capacity"
-            ];
+        // Enhanced Notepad functions with proper file management
+        function updateFileName(name) {
+            currentFileName = name || 'Untitled';
+            document.getElementById('currentFileName').textContent = currentFileName;
+            document.getElementById('statusFileName').textContent = currentFileName;
+        }
 
-            if (Math.random() < 0.05) { // 5% chance
-                setTimeout(() => {
-                    showPopup("🚨 SYSTEM NOTIFICATION 🚨<br><br>" + notifications[Math.floor(Math.random() * notifications.length)]);
-                }, Math.random() * 3000);
-            }
-        }, 10000);
-
-        // Glitch effects for extra chaos
-        function addGlitchEffect() {
-            if (Math.random() < 0.02) { // 2% chance
-                document.body.style.filter = 'hue-rotate(' + Math.random() * 360 + 'deg) saturate(' + (Math.random() * 3) + ')';
-                setTimeout(() => {
-                    document.body.style.filter = 'none';
-                }, 200);
+        function newNotepadFile() {
+            const currentContent = document.getElementById('notepadText').value;
+            if (currentContent.trim() !== '' && currentFileName !== 'Untitled') {
+                if (confirm('You have unsaved changes. Create a new file anyway?')) {
+                    document.getElementById('notepadText').value = '';
+                    updateFileName('Untitled');
+                    showPopup("✨ NEW FILE CREATED ✨<br><br>🎉 The supreme idiot has created a new file!<br><br>File Details:<br>• Status: Fresh canvas for more stupidity<br>• Content: Empty (like your brain)<br>• Author: Supreme Moron<br><br>Ready for your next masterpiece of idiocy! 📝");
+                }
+            } else {
+                document.getElementById('notepadText').value = '';
+                updateFileName('Untitled');
+                showPopup("✨ NEW FILE CREATED ✨<br><br>🎉 The supreme idiot has created a new file!<br><br>Fresh document ready for your useless thoughts! 📝");
             }
         }
 
-        setInterval(addGlitchEffect, 1000);
+        function showSaveDialog() {
+            const content = document.getElementById('notepadText').value;
+            if (content.trim() === '') {
+                showPopup("💾 SAVE ERROR 💾<br><br>Cannot save an empty file, you supreme moron!<br>Write something first, even if it's as stupid as you! 😂");
+                return;
+            }
+
+            document.getElementById('saveFileName').value = currentFileName === 'Untitled' ? '' : currentFileName;
+            document.getElementById('saveDialog').style.display = 'block';
+        }
+
+        function closeSaveDialog() {
+            document.getElementById('saveDialog').style.display = 'none';
+        }
+
+        function saveFile() {
+            const fileName = document.getElementById('saveFileName').value.trim();
+            const content = document.getElementById('notepadText').value;
+
+            if (!fileName) {
+                showPopup("❌ FILENAME ERROR ❌<br><br>Enter a filename, you brain-dead moron!<br>Even idiots need to name their files! 🤦‍♂️");
+                return;
+            }
+
+            if (content.trim() === '') {
+                showPopup("💾 SAVE ERROR 💾<br><br>Cannot save an empty file!<br>Write something first, genius! 😂");
+                return;
+            }
+
+            // Save file to memory storage
+            savedFiles[fileName] = {
+                content: content,
+                dateCreated: new Date().toLocaleString(),
+                size: content.length
+            };
+
+            updateFileName(fileName);
+            closeSaveDialog();
+
+            // Show dramatic save message
+            showFakeLoading("Saving file for the supreme idiot...", () => {
+                showPopup(`💾 FILE SAVED SUCCESSFULLY! 💾<br><br>🎉 The supreme idiot has created the file!<br><br>📄 File Details:<br>• Name: ${fileName}<br>• Size: ${content.length} bytes of pure stupidity<br>• Author: Supreme Moron (You)<br>• Date: ${new Date().toLocaleString()}<br>• Quality: Absolute garbage<br>• Location: /Documents/IdiotFiles/<br><br>Your useless thoughts have been preserved for eternity! 🗂️`);
+            });
+        }
+
+        function showOpenDialog() {
+            populateFileList();
+            document.getElementById('openDialog').style.display = 'block';
+        }
+
+        function closeOpenDialog() {
+            document.getElementById('openDialog').style.display = 'none';
+            document.getElementById('selectedFileName').value = '';
+        }
+
+        function populateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+
+            if (Object.keys(savedFiles).length === 0) {
+                fileList.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">No files found<br>(You haven\'t saved anything yet, genius!)</div>';
+                return;
+            }
+
+            Object.keys(savedFiles).forEach(fileName => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.textContent = `📄 ${fileName} (${savedFiles[fileName].size} bytes)`;
+                fileItem.onclick = () => selectFile(fileName, fileItem);
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        function selectFile(fileName, element) {
+            // Remove previous selection
+            document.querySelectorAll('.file-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+
+            // Select current item
+            element.classList.add('selected');
+            document.getElementById('selectedFileName').value = fileName;
+        }
+
+        function openSelectedFile() {
+            const fileName = document.getElementById('selectedFileName').value;
+
+            if (!fileName) {
+                showPopup("📂 SELECTION ERROR 📂<br><br>Select a file first, you brainless moron!<br>Even a donkey can click on files! 🐴");
+                return;
+            }
+
+            if (!savedFiles[fileName]) {
+                showPopup("📂 FILE ERROR 📂<br><br>File not found!<br>Did you delete it with your stupidity? 🤔");
+                return;
+            }
+
+            closeOpenDialog();
+
+            // Show dramatic loading
+            showFakeLoading("Opening file for this moron...", () => {
+                const fileData = savedFiles[fileName];
+                document.getElementById('notepadText').value = fileData.content;
+                updateFileName(fileName);
+
+                showPopup(`📂 FILE OPENED SUCCESSFULLY! 📂<br><br>🎉 The moron has opened the file!<br><br>📄 File Details:<br>• Name: ${fileName}<br>• Size: ${fileData.size} bytes of stupidity<br>• Created: ${fileData.dateCreated}<br>• Content Quality: Still garbage<br>• Status: Successfully loaded for the village idiot<br><br>Welcome back to your collection of useless thoughts! 🎊`);
+            });
+        }
+
+        // Terminal functions
+        function handleTerminalInput(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('terminalInput');
+                const command = input.value.trim().toLowerCase();
+                const output = document.getElementById('terminalOutput');
+
+                // Add command to output
+                output.innerHTML += `<div>idiot@turmoil:~$ ${input.value}</div>`;
+
+                // Process command
+                let response = processCommand(command);
+                output.innerHTML += `<div style="color: #ff6666;">${response}</div><br>`;
+
+                // Clear input
+                input.value = '';
+
+                // Scroll to bottom
+                document.getElementById('terminalContent').scrollTop = document.getElementById('terminalContent').scrollHeight;
+
+                // Check for virus detection command
+                if (command.includes('detect virus') || command.includes('virus scan') || command.includes('antivirus')) {
+                    setTimeout(showBSOD, 2000);
+                }
+            }
+        }
+
+        function processCommand(command) {
+            const responses = {
+                'help': 'Available commands: ls, pwd, whoami, date, clear, cat, mkdir, rm, ping, sudo, files\nBut honestly, none of them will help your pathetic existence! 😂',
+                'ls': 'disappointment.txt  failure.exe  your_life.trash  README_LOSER.md\nWow, look at all your failures listed so neatly!',
+                'pwd': '/home/idiot/desktop_of_shame\nYou are currently lost in your own stupidity!',
+                'whoami': 'You are: A certified idiot\nRank: Supreme Moron\nIQ Level: Potato',
+                'date': 'Today is: The day you realized you\'re an idiot\nTime: Way past your bedtime\nYear: 2024 (Year of the Dunce)',
+                'clear': '\n\n\n\n\n\n\nScreen cleared! But your stupidity remains... 🧹',
+                'cat': 'Meow! Even cats are smarter than you! 🐱',
+                'mkdir': 'Directory created: /home/idiot/another_failure/\nCongratulations on creating more useless folders!',
+                'rm': 'File deleted: your_brain.exe\nOh wait, that file never existed! 🗑️',
+                'ping': 'PING google.com: Destination unreachable\nYour internet is as broken as your logic!',
+                'sudo': 'sudo: You are not in the sudoers file. This incident will be reported.\nTo whom? The Department of Idiots?',
+                'exit': 'You can\'t exit your own stupidity! Nice try though! 🚪',
+                'reboot': 'Rebooting your brain... ERROR: No brain found to reboot! 🔄',
+                'virus': 'Virus detected: stupidity.exe running at 100% CPU\nRecommendation: Format your brain!',
+                'files': `Saved files: ${Object.keys(savedFiles).length > 0 ? Object.keys(savedFiles).join(', ') : 'None (because you\'re useless)'}`,
+                'detect virus': 'Scanning for viruses...\n[████████████████████] 100%\nCRITICAL VIRUS DETECTED: STUPIDITY.EXE\nSystem compromised! Initiating emergency shutdown...'
+            };
+
+            for (let cmd in responses) {
+                if (command.includes(cmd)) {
+                    return responses[cmd];
+                }
+            }
+
+            return `Command '${command}' not found. But then again, neither is your brain! 🤡\nTry 'help' if you can spell it correctly.`;
+        }
+
+        // BSOD functions
+        function showBSOD() {
+            document.getElementById('bsodScreen').style.display = 'block';
+        }
+
+        function hideBSOD() {
+            document.getElementById('bsodScreen').style.display = 'none';
+        }
+
+        // Recycle Bin
+        function showRecycleBinMessage() {
+            showPopup("First recycle your rotten brain you useless idiot! 🗑️🧠<br><br>Contents of Recycle Bin:<br>• your_dignity.exe<br>• common_sense.dll<br>• intelligence.sys<br>• self_respect.bak<br><br>All files permanently corrupted beyond recovery!");
+        }
 
         // Fake loading bars and progress indicators
         function showFakeLoading(title, callback) {
@@ -1066,6 +1081,141 @@
             ];
             return messages[Math.floor(Math.random() * messages.length)];
         }
+
+        // Make windows draggable
+        function makeDraggable() {
+            const windows = document.querySelectorAll('.window');
+            windows.forEach(window => {
+                const header = window.querySelector('.window-header');
+                let isDragging = false;
+                let currentX;
+                let currentY;
+                let initialX;
+                let initialY;
+                let xOffset = 0;
+                let yOffset = 0;
+
+                header.addEventListener('mousedown', dragStart);
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', dragEnd);
+
+                function dragStart(e) {
+                    initialX = e.clientX - xOffset;
+                    initialY = e.clientY - yOffset;
+
+                    if (e.target === header || header.contains(e.target)) {
+                        isDragging = true;
+                    }
+                }
+
+                function drag(e) {
+                    if (isDragging) {
+                        e.preventDefault();
+                        currentX = e.clientX - initialX;
+                        currentY = e.clientY - initialY;
+
+                        xOffset = currentX;
+                        yOffset = currentY;
+
+                        window.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+                    }
+                }
+
+                function dragEnd() {
+                    initialX = currentX;
+                    initialY = currentY;
+                    isDragging = false;
+                }
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            makeDraggable();
+            updateSystemInfo();
+            updateFileName('Untitled');
+
+            // Close dialogs when clicking outside
+            document.addEventListener('click', function (event) {
+                const startMenu = document.getElementById('startMenu');
+                const startButton = document.querySelector('.start-button');
+                const saveDialog = document.getElementById('saveDialog');
+                const openDialog = document.getElementById('openDialog');
+
+                if (!startMenu.contains(event.target) && !startButton.contains(event.target)) {
+                    startMenu.style.display = 'none';
+                }
+
+                if (!saveDialog.contains(event.target) && saveDialog.style.display === 'block') {
+                    if (!event.target.closest('button[onclick="showSaveDialog()"]')) {
+                        // Don't close if clicking the save button
+                    }
+                }
+
+                if (!openDialog.contains(event.target) && openDialog.style.display === 'block') {
+                    if (!event.target.closest('button[onclick="showOpenDialog()"]')) {
+                        // Don't close if clicking the open button  
+                    }
+                }
+            });
+
+            // Auto-focus terminal input when terminal opens
+            const terminalObserver = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.target.id === 'terminalWindow' && mutation.target.style.display === 'block') {
+                        setTimeout(() => {
+                            document.getElementById('terminalInput').focus();
+                        }, 100);
+                    }
+                });
+            });
+
+            const terminalWindow = document.getElementById('terminalWindow');
+            terminalObserver.observe(terminalWindow, { attributes: true, attributeFilter: ['style'] });
+
+            // Random system notifications
+            setInterval(() => {
+                const notifications = [
+                    "System Alert: Your stupidity levels are critically high!",
+                    "Warning: Brain.exe has stopped responding",
+                    "Update Available: Intelligence 2.0 (Not compatible with your system)",
+                    "Security Alert: Common sense firewall disabled",
+                    "Performance Warning: IQ running at 1% capacity"
+                ];
+
+                if (Math.random() < 0.05) { // 5% chance
+                    setTimeout(() => {
+                        showPopup("🚨 SYSTEM NOTIFICATION 🚨<br><br>" + notifications[Math.floor(Math.random() * notifications.length)]);
+                    }, Math.random() * 3000);
+                }
+            }, 10000);
+
+            // Add some glitch effects
+            setInterval(() => {
+                if (Math.random() < 0.02) { // 2% chance
+                    document.body.style.filter = 'hue-rotate(' + Math.random() * 360 + 'deg) saturate(' + (Math.random() * 3) + ')';
+                    setTimeout(() => {
+                        document.body.style.filter = 'none';
+                    }, 200);
+                }
+            }, 1000);
+
+            // Easter egg: Konami code
+            let konamiCode = [];
+            const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+
+            document.addEventListener('keydown', function (event) {
+                konamiCode.push(event.code);
+                if (konamiCode.length > konamiSequence.length) {
+                    konamiCode.shift();
+                }
+
+                if (konamiCode.length === konamiSequence.length && konamiCode.every((code, index) => code === konamiSequence[index])) {
+                    showPopup("🎉 CONGRATULATIONS! 🎉<br><br>You found the secret code!<br>Unfortunately, you're still an idiot.<br><br>Achievement Unlocked:<br>'Master of Uselessness' 🏆<br><br>Reward: Absolutely nothing! 😂");
+                    konamiCode = [];
+                }
+            });
+        });
     </script>
 </body>
 
