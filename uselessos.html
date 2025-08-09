@@ -202,6 +202,7 @@
             padding: 10px;
             border: 1px solid #ccc;
             user-select: text;
+            resize: none;
         }
 
         .notepad-controls {
@@ -402,7 +403,7 @@
 
         <div class="desktop-icon" style="top: 400px; left: 50px;" onclick="openBrowser()">
             <div class="icon">🌐</div>
-            <div class="icon-name">Fake Browser</div>
+            <div class="icon-name">Useless Browser</div>
         </div>
 
         <div class="desktop-icon" style="top: 520px; left: 50px;" onclick="openTerminal()">
@@ -434,7 +435,7 @@
                 <span>📝</span> Pointless Notepad
             </div>
             <div class="start-menu-item" onclick="openBrowser()">
-                <span>🌐</span> Fake Browser
+                <span>🌐</span> Useless Browser
             </div>
             <div class="start-menu-item" onclick="openTerminal()">
                 <span>💻</span> Useless Terminal
@@ -568,7 +569,7 @@
     <!-- Browser Window -->
     <div class="window" id="browserWindow" style="top: 140px; left: 240px; width: 600px; height: 400px;">
         <div class="window-header">
-            <div class="window-title">Fake Browser</div>
+            <div class="window-title">Useless Browser</div>
             <div class="window-controls">
                 <button class="window-control minimize" onclick="minimizeWindow('browserWindow')">-</button>
                 <button class="window-control maximize" onclick="maximizeWindow('browserWindow')">□</button>
@@ -676,6 +677,8 @@
         let terminalHistory = [];
         let savedFiles = {}; // Store files in memory
         let currentFileName = 'Untitled';
+        let isFileSaved = true; // Track if current file has been saved
+        let lastSavedContent = ''; // Track last saved content
 
         // Absurd time and battery updates
         function updateSystemInfo() {
@@ -835,26 +838,40 @@
             }
         }
 
-        // Enhanced Notepad functions with proper file management
+        // Enhanced Notepad functions - Windows Notepad behavior
         function updateFileName(name) {
             currentFileName = name || 'Untitled';
             document.getElementById('currentFileName').textContent = currentFileName;
             document.getElementById('statusFileName').textContent = currentFileName;
         }
 
-        function newNotepadFile() {
+        function hasUnsavedChanges() {
             const currentContent = document.getElementById('notepadText').value;
-            if (currentContent.trim() !== '' && currentFileName !== 'Untitled') {
-                if (confirm('You have unsaved changes. Create a new file anyway?')) {
-                    document.getElementById('notepadText').value = '';
-                    updateFileName('Untitled');
-                    showPopup("✨ NEW FILE CREATED ✨<br><br>🎉 The supreme idiot has created a new file!<br><br>File Details:<br>• Status: Fresh canvas for more stupidity<br>• Content: Empty (like your brain)<br>• Author: Supreme Moron<br><br>Ready for your next masterpiece of idiocy! 📝");
+            return currentContent !== lastSavedContent;
+        }
+
+        function resetNotepadState() {
+            currentFileName = 'Untitled';
+            isFileSaved = true;
+            lastSavedContent = '';
+            document.getElementById('notepadText').value = '';
+            updateFileName('Untitled');
+        }
+
+        function newNotepadFile() {
+            // Check if there are unsaved changes
+            if (hasUnsavedChanges()) {
+                const userChoice = confirm(`Do you want to save changes to ${currentFileName}?`);
+                if (userChoice) {
+                    // User wants to save first
+                    showSaveDialog();
+                    return; // Don't create new file yet
                 }
-            } else {
-                document.getElementById('notepadText').value = '';
-                updateFileName('Untitled');
-                showPopup("✨ NEW FILE CREATED ✨<br><br>🎉 The supreme idiot has created a new file!<br><br>Fresh document ready for your useless thoughts! 📝");
             }
+
+            // Create new file
+            resetNotepadState();
+            showPopup("✨ NEW FILE CREATED ✨<br><br>🎉 The supreme idiot has created a new file!<br><br>Fresh document ready for your useless thoughts! 📝");
         }
 
         function showSaveDialog() {
@@ -893,16 +910,29 @@
                 size: content.length
             };
 
+            // Update file state
+            currentFileName = fileName;
+            isFileSaved = true;
+            lastSavedContent = content;
             updateFileName(fileName);
             closeSaveDialog();
 
             // Show dramatic save message
             showFakeLoading("Saving file for the supreme idiot...", () => {
-                showPopup(`💾 FILE SAVED SUCCESSFULLY! 💾<br><br>🎉 The supreme idiot has created the file!<br><br>📄 File Details:<br>• Name: ${fileName}<br>• Size: ${content.length} bytes of pure stupidity<br>• Author: Supreme Moron (You)<br>• Date: ${new Date().toLocaleString()}<br>• Quality: Absolute garbage<br>• Location: /Documents/IdiotFiles/<br><br>Your useless thoughts have been preserved for eternity! 🗂️`);
+                showPopup(`💾 FILE SAVED SUCCESSFULLY! 💾<br><br>🎉 The supreme idiot has saved the file!<br><br>📄 File Details:<br>• Name: ${fileName}<br>• Size: ${content.length} bytes of pure stupidity<br>• Author: Supreme Moron (You)<br>• Date: ${new Date().toLocaleString()}<br>• Quality: Absolute garbage<br>• Location: /Documents/IdiotFiles/<br><br>Your useless thoughts have been preserved for eternity! 🗂️`);
             });
         }
 
         function showOpenDialog() {
+            // Check for unsaved changes first
+            if (hasUnsavedChanges()) {
+                const userChoice = confirm(`Do you want to save changes to ${currentFileName}?`);
+                if (userChoice) {
+                    showSaveDialog();
+                    return;
+                }
+            }
+
             populateFileList();
             document.getElementById('openDialog').style.display = 'block';
         }
@@ -960,6 +990,11 @@
             showFakeLoading("Opening file for this moron...", () => {
                 const fileData = savedFiles[fileName];
                 document.getElementById('notepadText').value = fileData.content;
+
+                // Update file state
+                currentFileName = fileName;
+                isFileSaved = true;
+                lastSavedContent = fileData.content;
                 updateFileName(fileName);
 
                 showPopup(`📂 FILE OPENED SUCCESSFULLY! 📂<br><br>🎉 The moron has opened the file!<br><br>📄 File Details:<br>• Name: ${fileName}<br>• Size: ${fileData.size} bytes of stupidity<br>• Created: ${fileData.dateCreated}<br>• Content Quality: Still garbage<br>• Status: Successfully loaded for the village idiot<br><br>Welcome back to your collection of useless thoughts! 🎊`);
@@ -1133,7 +1168,12 @@
         document.addEventListener('DOMContentLoaded', function () {
             makeDraggable();
             updateSystemInfo();
-            updateFileName('Untitled');
+            resetNotepadState();
+
+            // Track changes in notepad
+            document.getElementById('notepadText').addEventListener('input', function () {
+                // This will automatically track unsaved changes
+            });
 
             // Close dialogs when clicking outside
             document.addEventListener('click', function (event) {
