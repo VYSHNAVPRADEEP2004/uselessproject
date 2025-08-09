@@ -98,3 +98,7 @@ For Software:
   
    Soorya AP [LEAD] - development and creation of bat and shell script
    VyshnavPradeep   - contributed to the development of the structure and overall development of GUI
+
+## project URL(URL IF OF PROJECT REPOSITORY BECAUSE THE PROJECT IS AN OPERATING SYSTEM TO BE RUN IN THE LOCAL MACHINE NOT LIKELY TO BE DEPLOYED IN THE WEB)
+
+"https://github.com/VYSHNAVPRADEEP2004/uselessproject"
